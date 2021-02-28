@@ -1,4 +1,3 @@
-# RPI
 ON_SIGNAL = 23
 ON_BUTTON = 11
 IR = 26
