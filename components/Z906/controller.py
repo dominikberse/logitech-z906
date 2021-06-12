@@ -259,8 +259,8 @@ class Controller(ConsumingComponent):
             dsrdtr=False,
             timeout=1.0)
 
-        # set initial power state
-        self._pi.write(pins.ON_SIGNAL, 1)
+        # must stay at ground
+        self._pi.write(pins.ON_SIGNAL, 0)
 
         # initialize communication helpers
         self._reader = Reader(self, self._serial)
@@ -284,13 +284,6 @@ class Controller(ConsumingComponent):
             self._handlers[command](*params, **kwargs)
 
     def _turn_on(self):
-
-        # physical power on (wait for device)
-        self._pi.write(pins.ON_SIGNAL, 0)
-        self._state._stage = Stage.Powered
-        time.sleep(2.0)
-
-        # send logical power on
         self._reader.start()
         self._state._stage = Stage.Booting
         self._writer.write(Writer.on)
