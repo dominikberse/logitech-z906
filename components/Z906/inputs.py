@@ -42,7 +42,7 @@ class Inputs(PollingComponent):
     """ Handles the inputs """
 
     AnalogButtons = [
-        AnalogButton((0.140, 0.200), (lambda self: self._toggle_input())),
+        AnalogButton((0.150, 0.170), (lambda self: self._toggle_input())),
         AnalogButton((1.320, 1.380), (lambda self: self._toggle_mute())),
         AnalogButton((1.895, 1.955), (lambda self: self._toggle_speakers())),
         AnalogButton((2.495, 2.555), (lambda self: self._toggle_effect())),
