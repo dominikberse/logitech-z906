@@ -11,37 +11,31 @@ import logging
 import threading
 import pigpio
 import flask
+import os
 
 
+# initialize logging
+logging.basicConfig(level=logging.DEBUG)
 
-if __name__ == "__main__":
+# initialize webserver
+app = flask.Flask("logitech-z906")
 
-    # initialize logging
-    logging.basicConfig(level=logging.DEBUG)
+# load GPIO
+pi = pigpio.pi()
+if not pi.connected:
+    logging.error("GPIO not available")
+    exit(0)
 
-    # initialize webserver
-    app = flask.Flask("logitech-z906")
+# initialize core
+state = State()
+queue = Queue()
 
-    # load GPIO
-    pi = pigpio.pi()
-    if not pi.connected:
-        logging.error("GPIO not available")
-        exit(0)
+# initialize components
+service = Service(state, queue)
+service.register(Api(pi, state, queue, app))
+service.register(Controller(pi, state, queue))
+service.register(Inputs(pi, state, queue))
+service.register(Panel(pi, state, queue))
 
-    # initialize core
-    state = State()
-    queue = Queue()
-
-    # initialize components
-    service = Service(state, queue)
-    service.register(Api(pi, state, queue, app))
-    service.register(Controller(pi, state, queue))
-    service.register(Inputs(pi, state, queue))
-    service.register(Panel(pi, state, queue))
-
-    # run application
-    service.start()
-    app.run(host='0.0.0.0')
-
-    # shutdown
-    pi.stop()
+# run application
+service.start()

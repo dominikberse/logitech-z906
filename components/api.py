@@ -14,6 +14,8 @@ class Api(Component):
         # register all known endpoints
         app.add_url_rule("/state", view_func=self._get_state, methods=['GET'])
         app.add_url_rule("/command", view_func=self._post_command, methods=['POST'])
+        app.add_url_rule("/power", view_func=self._post_power, methods=['POST'])
+        app.add_url_rule("/input", view_func=self._post_input, methods=['POST'])
 
         # register known commands
         self._commands = {
@@ -35,15 +37,33 @@ class Api(Component):
     def _post_command(self):
         """ Execute arbitrary command """
         try:
-
-            # map and execute received command
             command = flask.request.json['command']
-            self.command(self._commands[command], *params)
+            self.command(self._commands[command])
             return flask.jsonify({})
 
         except:
             logging.exception('invalid request')
             return flask.jsonify({}), 400
 
+    def _post_power(self):
+        try:
+            power = flask.request.json.get('power', True)
+            if self._state.stage == Stage.Off and power:
+                self.command(Commands.TurnOn)
+            if self._state.stage == Stage.Ready and not power:
+                self.command(Commands.TurnOff)
+            return flask.jsonify({})
 
+        except:
+            logging.exception('invalid request')
+            return flask.jsonify({}), 400
 
+    def _post_input(self):
+        try:
+            input = flask.request.json['input']
+            self.command(Commands.SelectInput, Input(input))
+            return flask.jsonify({})
+
+        except:
+            logging.exception('invalid request')
+            return flask.jsonify({}), 400
