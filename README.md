@@ -10,7 +10,7 @@ TODO: Detailled documentation
 
 ## Resources
 
-- [Logitech Z906 Protocol](https://github.com/nomis/logitech-z906/blob/main/protocol.rst) (thanks to [RomanSzabados](@RomanSzabados))
+- [Logitech Z906 Protocol](https://github.com/nomis/logitech-z906/blob/main/protocol.rst) (thanks to [RomanSzabados](https://github.com/RomanSzabados))
 - [LIRC on Raspberry Pi](https://devkimchi.com/2020/08/12/turning-raspberry-pi-into-remote-controller/)
 - [Logitech Z906 LIRC protocol](https://sourceforge.net/p/lirc-remotes/mailman/lirc-remotes-users/thread/55239D94.7010304%40gmail.com/#msg33739361)
 - [Control panel hardware overview](https://www.reddit.com/r/hardwarehacking/comments/99eh5u/hacking_the_logitech_z906_speaker_system/)
