@@ -78,10 +78,12 @@ class Lirc(Component, Worker):
         pass
 
     def _volume_up(self):
-        self.command(Commands.VolumeUp)
+        if self._state.stage == Stage.Ready:
+            self.command(Commands.VolumeUp)
 
     def _volume_down(self):
-        self.command(Commands.VolumeDown)
+        if self._state.stage == Stage.Ready:
+            self.command(Commands.VolumeDown)
 
     def _loop(self, cycle, worker):
         """ Check for IR commands and forward them """
