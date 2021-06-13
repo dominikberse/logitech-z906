@@ -80,6 +80,10 @@ class Panel(Component):
         # prepare power LED
         pi.set_mode(pins.Q4, pigpio.OUTPUT)
 
+        # reset any previous states
+        pi.wave_tx_stop()
+        pi.write(pins.Q4, 0)
+
         # prepare all cols (+)
         self.all_cols_mask = 0
         for col in Panel.Cols:
@@ -92,7 +96,7 @@ class Panel(Component):
         for row in Panel.Rows:
             self.all_rows_mask |= 1 << row
             pi.set_mode(row, pigpio.OUTPUT)
-            pi.write(row, 0)
+            pi.write(row, 1)
 
     def _write_all_low(self):
         """ Power down all LEDs """
@@ -101,7 +105,7 @@ class Panel(Component):
         for col in Panel.Cols:
             self._pi.write(col, 0)
         for row in Panel.Rows:
-            self._pi.write(row, 0)
+            self._pi.write(row, 1)
 
     def row_mask(self, row, state):
         """ Generate the LED bitmask (on) for the given row """
