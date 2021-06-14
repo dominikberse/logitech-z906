@@ -10,7 +10,7 @@ TODO: Detailled documentation
 
 ## Overlays
 
-Overlays need to be added in order for the serial communication to work. Add to `/boot/config.txt` under `[all]` section (at the bottom).
+Overlays need to be added in order for the serial communication to work. Add to `/boot/config.txt` under `[all]` section (at the bottom). Only applies for Raspberry Pis with wireless chip onboard (tested for Raspberry Pi Zero W).
 
 ```
 dtoverlay=gpio-ir,gpio_pin=26
