@@ -1,12 +1,12 @@
-from model import Input, Effect, Speakers
-from core import PollingComponent
-import pins
+from core.component import Component
+from core.types import Input, Effect, Speakers, Stage
+from core import pins
 
 import pigpio
 import copy
 
 
-class Panel(PollingComponent):
+class Panel(Component):
     """ Controls the front panel """
 
     Leds = {
@@ -70,16 +70,26 @@ class Panel(PollingComponent):
         pins.Q10,
     ]
 
-    def __init__(self, pi):
-        self.pi = pi
+    def __init__(self, pi, state, queue):
+        super().__init__(pi, state, queue)
 
         # references to the waves
-        pi.wave_tx_stop()
         self._wave = None
         self._old = None
 
         # prepare power LED
         pi.set_mode(pins.Q4, pigpio.OUTPUT)
+
+        # reset any previous states
+        pi.wave_tx_stop()
+        pi.write(pins.Q4, 0)
+
+        # prepare all cols (+)
+        self.all_cols_mask = 0
+        for col in Panel.Cols:
+            self.all_cols_mask |= 1 << col
+            pi.set_mode(col, pigpio.OUTPUT)
+            pi.write(col, 0)
 
         # prepare all rows (-)
         self.all_rows_mask = 0
@@ -88,12 +98,14 @@ class Panel(PollingComponent):
             pi.set_mode(row, pigpio.OUTPUT)
             pi.write(row, 1)
 
-        # prepare all cols (+)
-        self.all_cols_mask = 0
+    def _write_all_low(self):
+        """ Power down all LEDs """
+
+        self._pi.wave_tx_stop()
         for col in Panel.Cols:
-            self.all_cols_mask |= 1 << col
-            pi.set_mode(col, pigpio.OUTPUT)
-            pi.write(col, 0)
+            self._pi.write(col, 0)
+        for row in Panel.Rows:
+            self._pi.write(row, 1)
 
     def row_mask(self, row, state):
         """ Generate the LED bitmask (on) for the given row """
@@ -140,28 +152,28 @@ class Panel(PollingComponent):
                     pigpio.pulse(0, dim_off, int(1500 * (1.0 - factor)))
                 ])
 
-        self.pi.wave_add_generic(pulses)
-        return self.pi.wave_create()
+        self._pi.wave_add_generic(pulses)
+        return self._pi.wave_create()
 
-    def poll_state(self, state):
+    def update(self):
         """ Update the panel to display given state """
 
         if self._old:
             # delete wave from last update cycle
-            self.pi.wave_delete(self._old)
+            self._pi.wave_delete(self._old)
             self._old = None
 
         # show power state
-        self.pi.write(pins.Q4, state.powered)
-
-        # power down
-        if not state.powered and self._wave:
-            self.pi.wave_tx_stop()
-            self._old = self._wave
-            self._wave = None
+        self._pi.write(pins.Q4, self._state.powered)
 
         # update wave
-        if state.powered and (state.trace or not self._wave):
+        if self._state.ready:
             self._old = self._wave
-            self._wave = self.create_wave(state)
-            self.pi.wave_send_repeat(self._wave)
+            self._wave = self.create_wave(self._state)
+            self._pi.wave_send_repeat(self._wave)
+
+        # power down
+        elif self._wave:
+            self._write_all_low()
+            self._old = self._wave
+            self._wave = None

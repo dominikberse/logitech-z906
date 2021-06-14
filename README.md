@@ -8,6 +8,16 @@ python service, that accepts commands from various sources (panel, IR, HTTP) and
 
 TODO: Detailled documentation
 
+## Overlays
+
+Overlays need to be added in order for the serial communication to work. Add to `/boot/config.txt` under `[all]` section (at the bottom).
+
+```
+dtoverlay=gpio-ir,gpio_pin=26
+dtoverlay=pi3-miniuart-bt
+enable_uart=1
+```
+
 ## Resources
 
 - [Logitech Z906 Protocol](https://github.com/nomis/logitech-z906/blob/main/protocol.rst) (thanks to [RomanSzabados](https://github.com/RomanSzabados))
