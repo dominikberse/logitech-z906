@@ -97,7 +97,7 @@ if [ "$RASPOTIFY" -eq 1 ] ; then
   fi
 fi
 
-if [ "$RASPOTIFY" -eq 1 ] ; then
+if [ "$RASPOTIFY" -eq 0 ] ; then
   whiptail --yesno "Configure raspotify for read-only filesystem?" 20 60
   if [ "$?" -eq 0 ] ; then
 
