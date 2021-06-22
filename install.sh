@@ -83,7 +83,9 @@ whiptail --yesno "Install and configure raspotify?" 20 60
 if [ "$?" -eq 0 ] ; then
   (curl -sL https://dtcooper.github.io/raspotify/install.sh | sh)
   DEVNAME=$(whiptail --inputbox "Enter speaker name" 20 60 "raspotify" 3>&1 1>&2 2>&3)
-  sudo sed -i "s/^DEVICE_NAME=.*$/DEVICE_NAME=\"$DEVNAME\"/" /etc/default/raspotify
+  if [ $? -eq 0 ] ; then
+    sudo sed -i "s/^DEVICE_NAME=.*$/DEVICE_NAME=\"$DEVNAME\"/" /etc/default/raspotify
+  fi
 fi
 
 # reboot
