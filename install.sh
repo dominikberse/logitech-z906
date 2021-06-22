@@ -3,6 +3,25 @@ set -e
 
 CONFIG=/boot/config.txt
 
+# install required packages
+sudo apt install -y \
+    git \
+    python3-pip \
+    pigpio \
+    ir-keytable
+pip3 install \
+    pyserial \
+    pigpio \
+    evdev \
+    flask \
+    gunicorn \
+    adafruit-circuitpython-ads1x15
+
+# clone repository
+if ! [ -f "/home/pi/logitech-z906" ]; then
+  git clone https://github.com/dominikberse/logitech-z906.git /home/pi/logitech-z906
+fi
+
 # disable serial console but enable serial hardware
 sudo raspi-config nonint do_serial 2
 sudo raspi-config nonint do_i2c 0
@@ -21,25 +40,6 @@ fi
 # move bluetooth to miniuart-bt
 if ! grep -q "dtoverlay=pi3-miniuart-bt" $CONFIG ; then
   sudo sed $CONFIG -i -e "\$adtoverlay=pi3-miniuart-bt"
-fi
-
-# install required packages
-sudo apt install -y \
-    git \
-    python3-pip \
-    pigpio \
-    ir-keytable
-pip3 install \
-    pyserial \
-    pigpio \
-    evdev \
-    flask \
-    gunicorn \
-    adafruit-circuitpython-ads1x15
-
-# clone repository
-if [ ! -f "/home/pi/logitech-z906" ]; then
-  git clone https://github.com/dominikberse/logitech-z906.git /home/pi/logitech-z906
 fi
 
 # configure logitech service
