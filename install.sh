@@ -78,16 +78,37 @@ fi
 sudo systemctl enable pigpiod
 sudo systemctl enable logitech
 
-# raspotify
-whiptail --yesno "Install and configure raspotify?" 20 60
-if [ "$?" -eq 0 ] ; then
-  (curl -sL https://dtcooper.github.io/raspotify/install.sh | sh)
-  sudo sed -i "s/^#\?CACHE_ARGS=.*$/CACHE_ARGS=\"--cache \/tmp\/raspotify\"/" /etc/default/raspotify
+# check raspotify
+systemctl list-unit-files --all | grep -q "raspotify"
+RASPOTIFY=$?
+if [ "$RASPOTIFY" -eq 1 ] ; then
+  whiptail --yesno "Install raspotify?" 20 60
+    
+  # install raspotify
+  if [ "$?" -eq 0 ] ; then
+    (curl -sL https://dtcooper.github.io/raspotify/install.sh | sh)
+    RASPOTIFY=0
+    
+    # set device name
+    DEVNAME=$(whiptail --inputbox "Enter speaker name" 20 60 "raspotify" 3>&1 1>&2 2>&3)
+    if [ $? -eq 0 ] ; then
+      sudo sed -i "s/^#\?DEVICE_NAME=.*$/DEVICE_NAME=\"$DEVNAME\"/" /etc/default/raspotify
+    fi
+  fi
+fi
 
-  # set device name
-  DEVNAME=$(whiptail --inputbox "Enter speaker name" 20 60 "raspotify" 3>&1 1>&2 2>&3)
-  if [ $? -eq 0 ] ; then
-    sudo sed -i "s/^#\?DEVICE_NAME=.*$/DEVICE_NAME=\"$DEVNAME\"/" /etc/default/raspotify
+if [ "$RASPOTIFY" -eq 1 ] ; then
+  whiptail --yesno "Configure raspotify for read-only filesystem?" 20 60
+  if [ "$?" -eq 0 ] ; then
+
+    # prepare for possible read-only mode
+    sudo systemctl stop raspotify
+    sudo sed -i "s/\/var\/cache\/raspotify/\/tmp\/raspotify/g" /lib/systemd/system/raspotify.service
+    sudo systemctl daemon-reload
+
+    sudo rm -r /var/cache/raspotify
+    sudo ln -s /tmp/raspotify /var/cache/raspotify
+    sudo systemctl start raspotify
   fi
 fi
 
