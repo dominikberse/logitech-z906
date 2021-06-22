@@ -13,14 +13,14 @@ if ! [ $? -eq 0 ] ; then
   return 0
 fi
 if ! grep -q "dtoverlay=gpio-ir" $CONFIG ; then
-  sed $CONFIG -i -e "\$adtoverlay=gpio-ir,gpio_pin=26"
+  sudo sed $CONFIG -i -e "\$adtoverlay=gpio-ir,gpio_pin=26"
 else
-  sed $CONFIG -i -e "s/^.*dtoverlay=gpio-ir.*/dtoverlay=gpio-ir,gpio_pin=26/"
+  sudo sed $CONFIG -i -e "s/^.*dtoverlay=gpio-ir.*/dtoverlay=gpio-ir,gpio_pin=26/"
 fi
 
 # move bluetooth to miniuart-bt
 if ! grep -q "dtoverlay=pi3-miniuart-bt" $CONFIG ; then
-  sed $CONFIG -i -e "\$adtoverlay=pi3-miniuart-bt"
+  sudo sed $CONFIG -i -e "\$adtoverlay=pi3-miniuart-bt"
 fi
 
 # install required packages
