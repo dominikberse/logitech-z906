@@ -18,7 +18,7 @@ pip3 install \
     adafruit-circuitpython-ads1x15
 
 # clone repository
-if ! [ -f "/home/pi/logitech-z906" ]; then
+if ! [ -d "/home/pi/logitech-z906" ]; then
   git clone https://github.com/dominikberse/logitech-z906.git /home/pi/logitech-z906
 fi
 

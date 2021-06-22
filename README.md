@@ -6,19 +6,29 @@ system, I desoldered the microcontroller from the control panel's circuit and so
 buttons to a Raspberry Pi Zero W. I hooked up the required wires of the subwoofer cable and implemented a small
 python service, that accepts commands from various sources (panel, IR, HTTP) and forwards them to the subwoofer.
 
-TODO: Detailled documentation
+## Installation
 
-## Overlays
-
-Overlays need to be added in order for the serial communication to work. Add to `/boot/config.txt` under `[all]` section (at the bottom). Only applies for Raspberry Pis with wireless chip onboard (tested for Raspberry Pi Zero W).
+Install using: 
 
 ```
-dtoverlay=gpio-ir,gpio_pin=26
+curl -sL https://raw.githubusercontent.com/dominikberse/logitech-z906/master/install.sh | sh
+```
+
+## Further reading
+
+### Reusing the Logitech Z906 control panel
+
+TODO
+
+### Redirecting bluetooth UART
+
+If your Raspberry Pi has a wireless chip, bluetooth UART must be reconfigured to use the mini-UART. Otherwise the required baudrate and odd parity are not available (tested for Raspberry Pi Zero W). This line is added to `/boot/config.txt` under `[all]` section by the installation script (at the bottom).
+
+```
 dtoverlay=pi3-miniuart-bt
-enable_uart=1
 ```
 
-## Resources
+### Resources
 
 - [Logitech Z906 Protocol](https://github.com/nomis/logitech-z906/blob/main/protocol.rst) (thanks to [RomanSzabados](https://github.com/RomanSzabados))
 - [IR on Raspberry Pi](https://blog.gordonturner.com/2020/05/31/raspberry-pi-ir-receiver/)
