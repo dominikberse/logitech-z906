@@ -38,12 +38,12 @@ pip3 install \
     adafruit-circuitpython-ads1x15
 
 # clone repository
-if ! [[ -f "/home/pi/logitech-z906" ]]; then
+if [ ! -f "/home/pi/logitech-z906" ]; then
   git clone https://github.com/dominikberse/logitech-z906.git /home/pi/logitech-z906
 fi
 
 # configure logitech service
-tee /etc/system/systemd/pigpiod.service > /dev/null <<'EOF'
+sudo tee /etc/systemd/system/logitech.service > /dev/null <<'EOF'
 [Unit]
 Description=media center api
 After=network.target pigpiod.service
